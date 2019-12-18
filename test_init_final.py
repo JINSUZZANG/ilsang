@@ -1800,8 +1800,9 @@ while True:
 			################ 현재시간 확인 ################ 
 
 			if message.content == command[17] :
+				curruntTime = datetime.datetime.now() + datetime.timedelta(hours = int(basicSetting[0])
 				embed = discord.Embed(
-					title = '현재시간은 ' + datetime.datetime.now().strftime('%H') + '시 ' + datetime.datetime.now().strftime('%M') + '분 ' + datetime.datetime.now().strftime('%S')+ '초 입니다.',
+					title = '현재시간은 ' + curruntTime.strftime('%H') + '시 ' + curruntTime.strftime('%M') + '분 ' + curruntTime.strftime('%S')+ '초 입니다.',
 					color=0xff00ff
 					)
 				await client.get_channel(channel).send( embed=embed, tts=False)
