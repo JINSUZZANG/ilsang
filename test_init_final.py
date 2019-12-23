@@ -575,7 +575,7 @@ async def MakeSound(saveSTR, filename):
 	'''
 	try:
 		encText = urllib.parse.quote(saveSTR)
-		print(encText)
+		#print(encText)
 		urllib.request.urlretrieve("https://clova.ai/proxy/voice/api/tts?text=" + encText + "%0A&voicefont=1&format=wav",filename + '.wav')
 	except Exception as e:
 		print (e)
