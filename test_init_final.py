@@ -580,7 +580,7 @@ async def MakeSound(saveSTR, filename):
 	except Exception as e:
 		print (e)
 		tts = gTTS(saveSTR, lang = 'ko')
-		tts.save('./' + filename + '.mp3')
+		tts.save('./' + filename + '.wav')
 		pass
 
 #mp3 파일 재생함수	
@@ -1355,7 +1355,7 @@ while True:
 				sayMessage = tmp_sayMessage[len(command[15])+1:]
 				await MakeSound(message.author.display_name +'님이.' + sayMessage, './sound/say')
 				await client.get_channel(channel).send("```< " + msg.author.display_name + " >님이 \"" + sayMessage + "\"```", tts=False)
-				await PlaySound(voice_client1, './sound/say.mp3')
+				await PlaySound(voice_client1, './sound/say.wav')
 
 			################ 보탐봇 재시작 ################ 
 
