@@ -31,8 +31,8 @@ logging.basicConfig(stream=log_stream, level=logging.WARNING)
 #ilsanglog.addHandler(handler)
 #####################################################
 
-if not discord.opus.is_loaded():
-	discord.opus.load_opus('opus')
+#if not discord.opus.is_loaded():
+#	discord.opus.load_opus('opus')
 
 basicSetting = []
 bossData = []
