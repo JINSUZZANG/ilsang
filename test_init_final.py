@@ -2157,7 +2157,8 @@ while True:
 				kill_output = ''
 
 				for i in range(len(kill_Data)):
-					kill_output += ':skull_crossbones: ' + str(kill_Data[i][0]) + ' : ' + str(kill_Data[i][1]) + '번 따히!\n'
+					if sayMessage != ' ':
+						kill_output += ':skull_crossbones: ' + str(kill_Data[i][0]) + ' : ' + str(kill_Data[i][1]) + '번 따히!\n'
 
 				if kill_output != '' :
 					embed = discord.Embed(
@@ -2178,22 +2179,25 @@ while True:
 
 				tmp_fk = []
 				listchk = 0
+				
+				if sayMessage != ' ':
+					for i in range(len(kill_Data)):
+						if sayMessage == kill_Data[i][0]:
+							kill_Data[i][1] = int(kill_Data[i][1]) + 1
+							listchk = 1
 
-				for i in range(len(kill_Data)):
-					if sayMessage == kill_Data[i][0]:
-						kill_Data[i][1] = int(kill_Data[i][1]) + 1
-						listchk = 1
-
-				if listchk == 0:
-					tmp_fk.append(sayMessage)
-					tmp_fk.append(1)
-					kill_Data.append(tmp_fk)
-					tmp_fk = []
-				embed = discord.Embed(
-						description= ':skull_crossbones:' + sayMessage + ' 따히!\n',
-						color=0xff00ff
-						)
-				await msg.channel.send(embed=embed, tts=False)
+					if listchk == 0:
+						tmp_fk.append(sayMessage)
+						tmp_fk.append(1)
+						kill_Data.append(tmp_fk)
+						tmp_fk = []
+					embed = discord.Embed(
+							description= ':skull_crossbones:' + sayMessage + ' 따히!\n',
+							color=0xff00ff
+							)
+					await msg.channel.send(embed=embed, tts=False)
+				else:
+					await client.get_channel(channel).send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
 
 			################ 킬삭제 ################ 
 			if message.content.startswith(command[24]+' '):
@@ -2202,16 +2206,19 @@ while True:
 
 				tmp_fk = []
 				indexchk = 0
+				
+				if sayMessage != ' ':
+					for i in range(len(kill_Data)):
+						if sayMessage == kill_Data[i][0]:
+							indexchk = i + 1
 
-				for i in range(len(kill_Data)):
-					if sayMessage == kill_Data[i][0]:
-						indexchk = i + 1
-						
-				if indexchk != 0:
-					del(kill_Data[indexchk-1])
-					await client.get_channel(channel).send( '```<' + sayMessage + '> 킬 목록 삭제완료!\n```', tts=False)
-				else :				
-					await client.get_channel(channel).send( '```킬 목록에 등록되어 있지 않습니다!\n```', tts=False)
+					if indexchk != 0:
+						del(kill_Data[indexchk-1])
+						await client.get_channel(channel).send( '```<' + sayMessage + '> 킬 목록 삭제완료!\n```', tts=False)
+					else :				
+						await client.get_channel(channel).send( '```킬 목록에 등록되어 있지 않습니다!\n```', tts=False)
+				else:
+					await client.get_channel(channel).send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
 
 
 	client.loop.create_task(task())
