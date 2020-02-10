@@ -1841,7 +1841,7 @@ while True:
 						boss_information[0] = '``` ```'
 
 					if len(tmp_boss_information[0]) != 0:
-						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0][:len(tmp_boss_information[0])-2] + "\n```"
+						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0][:len(tmp_boss_information[0])-1] + "\n```"
 					else :
 						tmp_boss_information[0] = '``` ```'
 
