@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 
-################ Server V14 #####################
+################ Server V15 #####################
 
 import os
 import sys
@@ -127,14 +127,19 @@ def init():
 	
 	global regenembed
 	global command
+	global kill_Data
+	global kill_Time
 
 	command = []
 	tmp_bossData = []
 	tmp_fixed_bossData = []
 	FixedBossDateData = []
 	indexFixedBossname = []
+	kill_Data = []
+	tmp_kill_Data = []
 	f = []
 	fb = []
+	fk = []
 	#print("test")
 	
 	inidata = repo.get_contents("test_setting.ini")
@@ -157,6 +162,11 @@ def init():
 	file_data2 = file_data2.decode('utf-8')
 	fixed_inputData = file_data2.split('\n')
 
+	kill_inidata = repo.get_contents("kill_list.ini")
+	file_data5 = base64.b64decode(kill_inidata.content)
+	file_data5 = file_data5.decode('utf-8')
+	kill_inputData = file_data5.split('\n')
+
 	for i in range(len(fixed_inputData)):
 		FixedBossDateData.append(fixed_inputData[i])
 
@@ -178,10 +188,14 @@ def init():
 
 	for i in range(fixed_inputData.count('\r')):
 		fixed_inputData.remove('\r')
+	
+	for i in range(kill_inputData.count('\r')):
+		kill_inputData.remove('\r')
 
 	del(command_inputData[0])
 	del(boss_inputData[0])
 	del(fixed_inputData[0])
+	del(kill_inputData[0])
 	
 	############## 보탐봇 초기 설정 리스트 #####################
 	basicSetting.append(inputData[0][11:])     #basicSetting[0] : timezone
@@ -204,7 +218,21 @@ def init():
 
 	############## 보탐봇 명령어 리스트 #####################
 	for i in range(len(command_inputData)):
-		command.append(command_inputData[i][12:].rstrip('\r'))     #command[0] ~ [22] : 명령어
+		command.append(command_inputData[i][12:].rstrip('\r'))     #command[0] ~ [24] : 명령어
+
+	################## 척살 명단 ###########################
+	for i in range(len(kill_inputData)):
+		tmp_kill_Data.append(kill_inputData[i].rstrip('\r'))
+		fk.append(tmp_kill_Data[i][:tmp_kill_Data[i].find(' ')])
+		fk.append(tmp_kill_Data[i][tmp_kill_Data[i].find(' ')+1:tmp_kill_Data[i].find(' ')+2])
+		kill_Data.append(fk)     #kill_Data[0] : 척살명단   kill_Data[1] : 죽은횟수
+		fk = []
+	tmp_killtime = datetime.datetime.now().replace(hour=int(5), minute=int(0), second = int(0))
+	kill_Time = datetime.datetime.now()
+	if tmp_killtime < kill_Time :
+		kill_Time = tmp_killtime + datetime.timedelta(days=int(1))
+	else:
+		kill_Time = tmp_killtime
 	
 	for i in range(len(basicSetting)):
 		basicSetting[i] = basicSetting[i].strip()
@@ -369,7 +397,7 @@ async def task():
 	global bossFlag
 	global bossFlag0
 	global fixed_bossFlag
-	global fiexd_bossFlag0	
+	global fixed_bossFlag0
 	global bossMungFlag
 	global bossMungCnt
 	
@@ -383,6 +411,7 @@ async def task():
 	global channel_type
 	
 	global endTime
+	global kill_Time
 	
 	if chflg == 1 : 
 		if voice_client1.is_connected() == False :
@@ -427,6 +456,7 @@ async def task():
 							bossDateString[i] = tmp_bossTime[i].strftime('%Y-%m-%d')
 				await dbSave()
 				await FixedBossDateSave()
+				await kill_list_Save()
 				#await client.get_channel(channel).send('<갑자기 인사해도 놀라지마세요!>', tts=False)
 				print("보탐봇재시작!")
 				endTime = endTime + datetime.timedelta(days = int(basicSetting[13]))
@@ -443,6 +473,11 @@ async def task():
 				else:
 					contents12 = repo_restart.get_contents("restart.txt")
 					repo_restart.update_file(contents12.path, "restart_1", "", contents12.sha)
+			
+			################ 킬 목록 초기화 ################ 
+			if kill_Time.strftime('%Y-%m-%d ') + kill_Time.strftime('%H:%M') == now.strftime('%Y-%m-%d ') + now.strftime('%H:%M'):
+				kill_Time = kill_Time + datetime.timedelta(days=int(1))
+				await initkill_list()
 
 			################ 고정 보스 확인 ################ 
 			for i in range(fixed_bossNum):
@@ -753,6 +788,40 @@ async def LadderFunc(number, ladderlist, channelVal):
 	else:
 		await channelVal.send('```추첨인원이 총 인원과 같거나 많습니다. 재입력 해주세요```', tts=False)
 
+#킬초기화
+async def initkill_list():
+	global kill_Data
+	
+	kill_Data = []
+
+	try :
+		contents = repo.get_contents("kill_list.ini")
+		repo.update_file(contents.path, "kill list", '-----척살명단-----', contents.sha)
+	except GithubException as e :
+		print ('save error!!')
+		print(e.args[1]['message']) # output: This repository is empty.
+		errortime = datetime.datetime.now()
+		print (errortime)
+		pass
+
+#킬목록저장
+async def kill_list_Save():
+	global kill_Data
+
+	output_kill_list = '-----척살명단-----\n'
+	for i in range(len(kill_Data)):
+		output_kill_list += str(kill_Data[i][0]) + ' ' + str(kill_Data[i][1]) + '\n'
+
+	try :
+		contents = repo.get_contents("kill_list.ini")
+		repo.update_file(contents.path, "kill list", output_kill_list, contents.sha)
+	except GithubException as e :
+		print ('save error!!')
+		print(e.args[1]['message']) # output: This repository is empty.
+		errortime = datetime.datetime.now()
+		print (errortime)
+		pass
+
 ## 명치 예외처리	
 def handle_exit():
 	#print("Handling")
@@ -895,6 +964,8 @@ while True:
 		global credentials	#정산
 
 		global regenembed
+		global command
+		global kill_Data
 		
 		id = msg.author.id #id라는 변수에는 메시지를 보낸사람의 ID를 담습니다.
 		
@@ -1345,6 +1416,10 @@ while True:
 				command_list += command[15] + ' [할말]\n'     #!v
 				command_list += command[16] + '\n'     #!리젠
 				command_list += command[17] + '\n'     #!현재시간
+				command_list += command[22] + '\n'     #!킬초기화
+				command_list += command[23] + '\n'     #!킬횟수 확인
+				command_list += command[23] + ' [아이디]\n'     #!킬
+				command_list += command[24] + ' [아이디]\n'     #!킬삭제
 				command_list += command[18] + '\n'     #!공지
 				command_list += command[18] + ' [공지내용]\n'     #!공지
 				command_list += command[18] + '삭제\n'     #!공지
@@ -1406,6 +1481,7 @@ while True:
 							bossTimeString[i] = tmp_bossTime[i].strftime('%H:%M:%S')
 							bossDateString[i] = tmp_bossTime[i].strftime('%Y-%m-%d')
 				await dbSave()
+				await kill_list_Save()
 				#await FixedBossDateSave()
 				#await client.get_channel(channel).send('<보탐봇 재시작 중... 갑자기 인사해도 놀라지마세요!>', tts=False)
 				print("보탐봇강제재시작!")
@@ -1556,7 +1632,7 @@ while True:
 			################ 보탐봇 기본 설정확인 ################ 
 
 			if message.content == command[1]:		
-				setting_val = '보탐봇버전 : Server Ver.14 (2020. 1. 30.)\n'
+				setting_val = '보탐봇버전 : Server Ver.15 (2020. 2. 10.)\n'
 				setting_val += '음성채널 : ' + client.get_channel(basicSetting[6]).name + '\n'
 				setting_val += '텍스트채널 : ' + client.get_channel(basicSetting[7]).name +'\n'
 				if basicSetting[8] != "" :
@@ -1691,7 +1767,7 @@ while True:
 						if len(tmp_boss_information[tmp_cnt]) > 1000 :
 							tmp_boss_information.append('')
 							tmp_cnt += 1
-						tmp_boss_information[tmp_cnt] = tmp_boss_information[tmp_cnt] + bossData[i][0] + ', '
+						tmp_boss_information[tmp_cnt] = tmp_boss_information[tmp_cnt] + bossData[i][0] + ','
 					else :
 						aa.append(bossData[i][0])		                     #output_bossData[0] : 보스명
 						if bossMungFlag[i] == True :
@@ -1741,6 +1817,7 @@ while True:
 									boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (멍 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
 
 				if len(boss_information) == 1 and len(tmp_boss_information) == 1:
+					###########################
 					if len(boss_information[0]) != 0:
 						boss_information[0] = "```diff\n" + boss_information[0] + "\n```"
 					else :
@@ -1750,7 +1827,7 @@ while True:
 						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
 					else :
 						tmp_boss_information[0] = '``` ```'
-					###########################
+
 					embed = discord.Embed(
 							title = "----- 보스탐 정보 -----",
 							description= boss_information[0],
@@ -1765,9 +1842,14 @@ while True:
 					await client.get_channel(channel).send( embed=embed, tts=False)
 				else : 
 					###########################일반보스출력
+					if len(boss_information[0]) != 0:
+						boss_information[0] = "```diff\n" + boss_information[0] + "\n```"
+					else :
+						boss_information[0] = '``` ```'
+
 					embed = discord.Embed(
 							title = "----- 보스탐 정보 -----",
-							description= '```diff\n' + boss_information[0] + '```',
+							description= boss_information[0],
 							color=0x0000ff
 							)
 					await client.get_channel(channel).send( embed=embed, tts=False)
@@ -1784,9 +1866,14 @@ while True:
 								)
 						await client.get_channel(channel).send( embed=embed, tts=False)
 					###########################미예약보스출력
+					if len(tmp_boss_information[0]) != 0:
+						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
+					else :
+						tmp_boss_information[0] = '``` ```'
+
 					embed = discord.Embed(
 						title = "----- 미예약 보스 -----",
-						description= "```fix\n" + tmp_boss_information[0] + "\n```",
+						description= tmp_boss_information[0],
 						color=0x0000ff
 						)
 					await client.get_channel(channel).send( embed=embed, tts=False)
@@ -1804,6 +1891,7 @@ while True:
 						await client.get_channel(channel).send( embed=embed, tts=False)
 
 				await dbSave()
+				await kill_list_Save()
 
 			################ 보스타임 출력(고정보스포함) ################ 
 
@@ -1833,7 +1921,7 @@ while True:
 						if len(tmp_boss_information[tmp_cnt]) > 1800 :
 							tmp_boss_information.append('')
 							tmp_cnt += 1
-						tmp_boss_information[tmp_cnt] = tmp_boss_information[tmp_cnt] + bossData[i][0] + ', '
+						tmp_boss_information[tmp_cnt] = tmp_boss_information[tmp_cnt] + bossData[i][0] + ','
 					else :
 						aa.append(bossData[i][0])		                     #output_bossData[0] : 보스명
 						if bossMungFlag[i] == True :
@@ -1892,12 +1980,12 @@ while True:
 								else :
 									boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (멍 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
 
+				###########################고정보스출력
 				if len(fixedboss_information[0]) != 0:
 					fixedboss_information[0] = "```diff\n" + fixedboss_information[0] + "\n```"
 				else :
 					fixedboss_information[0] = '``` ```'
-				
-				###########################고정보스출력
+		
 				embed = discord.Embed(
 						title = "----- 고 정 보 스 -----",
 						description= fixedboss_information[0],
@@ -1917,11 +2005,12 @@ while True:
 							)
 					await client.get_channel(channel).send( embed=embed, tts=False)
 
+				###########################일반보스출력
 				if len(boss_information[0]) != 0:
 					boss_information[0] = "```diff\n" + boss_information[0] + "\n```"
 				else :
 					boss_information[0] = '``` ```'
-				###########################일반보스출력
+
 				embed = discord.Embed(
 						title = "----- 보스탐 정보 -----",
 						description= boss_information[0],
@@ -1940,10 +2029,16 @@ while True:
 							color=0x0000ff
 							)
 					await client.get_channel(channel).send( embed=embed, tts=False)
+
 				###########################미예약보스출력
+				if len(tmp_boss_information[0]) != 0:
+					tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
+				else :
+					tmp_boss_information[0] = '``` ```'
+
 				embed = discord.Embed(
 					title = "----- 미예약 보스 -----",
-					description= "```fix\n" + tmp_boss_information[0] + "\n```",
+					description= tmp_boss_information[0],
 					color=0x0000ff
 					)
 				await client.get_channel(channel).send( embed=embed, tts=False)
@@ -1961,6 +2056,7 @@ while True:
 					await client.get_channel(channel).send( embed=embed, tts=False)
 
 				await dbSave()
+				await kill_list_Save()
 
 			################ 현재시간 확인 ################ 
 
@@ -2050,6 +2146,73 @@ while True:
 							color=0xff00ff
 							)
 					await msg.channel.send(embed=embed, tts=False)
+
+			################ 킬초기화 ################ 
+			if message.content == command[22]:
+				await initkill_list()
+				await client.get_channel(channel).send( '< 킬 목록 초기화완료 >', tts=False)
+
+			################ 킬명단 확인 ################ 
+			if message.content == command[23]:
+				kill_output = ''
+
+				for i in range(len(kill_Data)):
+					kill_output += ':skull_crossbones: ' + str(kill_Data[i][0]) + ' : ' + str(kill_Data[i][1]) + '번 따히!\n'
+
+				if kill_output != '' :
+					embed = discord.Embed(
+							description= str(kill_output),
+							color=0xff00ff
+							)
+				else :
+					embed = discord.Embed(
+							description= '등록된 킬 목록이 없습니다. 분발하세요!',
+							color=0xff00ff
+							)
+				await msg.channel.send(embed=embed, tts=False)
+			
+			################ 킬등록 ################ 
+			if message.content.startswith(command[23]+' '):
+				tmp_sayMessage = message.content
+				sayMessage = tmp_sayMessage[len(command[23])+1:]
+
+				tmp_fk = []
+				listchk = 0
+
+				for i in range(len(kill_Data)):
+					if sayMessage == kill_Data[i][0]:
+						kill_Data[i][1] = int(kill_Data[i][1]) + 1
+						listchk = 1
+
+				if listchk == 0:
+					tmp_fk.append(sayMessage)
+					tmp_fk.append(1)
+					kill_Data.append(tmp_fk)
+					tmp_fk = []
+				embed = discord.Embed(
+						description= ':skull_crossbones:' + sayMessage + ' 따히!\n',
+						color=0xff00ff
+						)
+				await msg.channel.send(embed=embed, tts=False)
+
+			################ 킬삭제 ################ 
+			if message.content.startswith(command[24]+' '):
+				tmp_sayMessage = message.content
+				sayMessage = tmp_sayMessage[len(command[24])+1:]
+
+				tmp_fk = []
+				indexchk = 0
+
+				for i in range(len(kill_Data)):
+					if sayMessage == kill_Data[i][0]:
+						indexchk = i + 1
+						
+				if indexchk != 0:
+					del(kill_Data[indexchk-1])
+					await client.get_channel(channel).send( '```<' + sayMessage + '> 킬 목록 삭제완료!\n```', tts=False)
+				else :				
+					await client.get_channel(channel).send( '```킬 목록에 등록되어 있지 않습니다!\n```', tts=False)
+
 
 	client.loop.create_task(task())
 	try:
