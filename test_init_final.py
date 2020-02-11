@@ -1884,7 +1884,10 @@ while True:
 						await client.get_channel(channel).send( embed=embed, tts=False)
 					###########################미예약보스출력
 					if len(tmp_boss_information[0]) != 0:
-						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
+						if len(tmp_boss_information) == 1 :
+							tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0][:len(tmp_boss_information[0])-1] + "\n```"
+						else:
+							tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
 					else :
 						tmp_boss_information[0] = '``` ```'
 
@@ -2052,7 +2055,10 @@ while True:
 
 				###########################미예약보스출력
 				if len(tmp_boss_information[0]) != 0:
-					tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
+					if len(tmp_boss_information) == 1 :
+						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0][:len(tmp_boss_information[0])-1] + "\n```"
+					else:
+						tmp_boss_information[0] = "```fix\n" + tmp_boss_information[0] + "\n```"
 				else :
 					tmp_boss_information[0] = '``` ```'
 
