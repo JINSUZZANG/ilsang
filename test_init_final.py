@@ -1896,7 +1896,10 @@ while True:
 					await client.get_channel(channel).send( embed=embed, tts=False)
 					for i in range(len(tmp_boss_information)-1):
 						if len(tmp_boss_information[i+1]) != 0:
-							tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1] + "\n```"
+							if i 1= len(tmp_boss_information[i+1])-2:
+								tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1][:len(tmp_boss_information[i+1])-1] + "\n```"
+							else:
+								tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1] + "\n```"
 						else :
 							tmp_boss_information[i+1] = '``` ```'
 
@@ -2061,7 +2064,10 @@ while True:
 				await client.get_channel(channel).send( embed=embed, tts=False)
 				for i in range(len(tmp_boss_information)-1):
 					if len(tmp_boss_information[i+1]) != 0:
-						tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1] + "\n```"
+						if i 1= len(tmp_boss_information[i+1])-2:
+							tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1][:len(tmp_boss_information[i+1])-1] + "\n```"
+						else:
+							tmp_boss_information[i+1] = "```fix\n" + tmp_boss_information[i+1] + "\n```"
 					else :
 						tmp_boss_information[i+1] = '``` ```'
 
