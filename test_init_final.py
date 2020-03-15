@@ -129,6 +129,8 @@ def init():
 	global command
 	global kill_Data
 	global kill_Time
+	
+	global testcommand
 
 	command = []
 	tmp_bossData = []
@@ -221,6 +223,9 @@ def init():
 	############## 보탐봇 명령어 리스트 #####################
 	for i in range(len(command_inputData)):
 		command.append(command_inputData[i][12:].rstrip('\r'))     #command[0] ~ [24] : 명령어
+		
+	
+	testcommand = ['!테스트1', '!테스트2', '!테스트3']
 
 	################## 척살 명단 ###########################
 	for i in range(len(kill_inputData)):
@@ -984,6 +989,8 @@ while True:
 		global regenembed
 		global command
 		global kill_Data
+		
+		global testcommand
 		
 		id = msg.author.id #id라는 변수에는 메시지를 보낸사람의 ID를 담습니다.
 		
@@ -2366,6 +2373,10 @@ while True:
 						await client.get_channel(channel).send( '```킬 목록에 등록되어 있지 않습니다!\n```', tts=False)
 				else:
 					await client.get_channel(channel).send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
+					
+			################ 테스트 ################ 
+			if message.content.startswith(i) for i in testcommand :
+				print (i)
 
 	client.loop.create_task(task())
 	try:
