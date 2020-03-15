@@ -2375,7 +2375,7 @@ while True:
 					await client.get_channel(channel).send( '```제대로 된 아이디를 입력해주세요!\n```', tts=False)
 					
 			################ 테스트 ################ 
-			if message.content.startswith(i) for i in testcommand :
+			i for i in testcommand if message.content.startswith(i) == i:
 				print (i)
 
 	client.loop.create_task(task())
