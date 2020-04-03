@@ -8,7 +8,7 @@ import asyncio
 import discord
 import datetime
 import random
-import math
+from math import ceil, floor
 import logging
 from discord.ext import commands
 from gtts import gTTS
