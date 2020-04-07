@@ -254,7 +254,7 @@ def init():
 	if basicSetting[7] != "":
 		basicSetting[7] = int(basicSetting[7])
 	
-		if basicSetting[8] != "":
+	if basicSetting[8] != "":
 		basicSetting[8] = int(basicSetting[8])
 		
 	if basicSetting[11] != "":
