@@ -21,7 +21,6 @@ from oauth2client.service_account import ServiceAccountCredentials #정산
 from io import StringIO
 import urllib.request
 from math import ceil, floor
-from discord.ext.commands import Bot
 
 ##################### 로깅 ###########################
 log_stream = StringIO()    
@@ -1112,22 +1111,22 @@ while True:
 			for i in range(len(channel_name)):
 				if  channel_name[i] == msg:
 					channel = int(channel_id[i])
-
+					
 			inidata_textCH = repo.get_contents("test_setting.ini")
 			file_data_textCH = base64.b64decode(inidata_textCH.content)
 			file_data_textCH = file_data_textCH.decode('utf-8')
 			inputData_textCH = file_data_textCH.split('\n')
-
+			
 			for i in range(len(inputData_textCH)):
 				if inputData_textCH[i] == 'textchannel = ' + str(basicSetting[7]) + '\r':
 					inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
 					basicSetting[7] = int(channel)
-
+			
 			result_textCH = '\n'.join(inputData_textCH)
 
 			contents = repo.get_contents("test_setting.ini")
 			repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
-
+				
 			await client.get_channel(channel).send('< ' + client.get_channel(channel).name + ' 이동완료>', tts=False)
 		else:
 			return
@@ -1140,7 +1139,7 @@ while True:
 			separate_money = msg.split(" ")
 			num_sep = floor(int(separate_money[0]))
 			cal_tax1 = floor(float(separate_money[1])*0.05)
-
+			
 			real_money = floor(floor(float(separate_money[1])) - cal_tax1)
 			cal_tax2 = floor(real_money/num_sep) - floor(float(floor(real_money/num_sep))*0.95)
 			if num_sep == 0 :
@@ -1195,7 +1194,7 @@ while True:
 			await ctx.send(embed=regenembed, tts=False)
 		else:
 			return
-
+			
 	################ 현재시간 확인 ################ 
 	@client.command(name=command[17][0], aliases=command[17][1:])
 	async def currentTime_(ctx):
@@ -1230,7 +1229,7 @@ while True:
 							)
 				else :
 					embed = discord.Embed(
-							description= '등록된 공지가 없습니다.',
+							description= '```등록된 공지가 없습니다.```',
 							color=0xff00ff
 							)
 				await ctx.send(embed=embed, tts=False)
@@ -1314,7 +1313,7 @@ while True:
 							)
 				else :
 					embed = discord.Embed(
-							description= '등록된 킬 목록이 없습니다. 분발하세요!',
+							description= '```등록된 킬 목록이 없습니다. 분발하세요!```',
 							color=0xff00ff
 							)
 				await ctx.send(embed=embed, tts=False)
@@ -1334,7 +1333,7 @@ while True:
 				for i in range(len(kill_Data)):
 					if sayMessage == kill_Data[i][0]:
 						indexchk = i + 1
-
+						
 				if indexchk != 0:
 					del(kill_Data[indexchk-1])
 					await ctx.send( '```<' + sayMessage + '> 킬 목록 삭제완료!\n```', tts=False)
@@ -1364,10 +1363,10 @@ while True:
 			racing_member = msg.split(" ")
 
 			if len(racing_member) == 1:
-				await ctx.send('레이스 인원이 1명 입니다.')
+				await ctx.send('```레이스 인원이 1명 입니다.```')
 				return
 			elif len(racing_member) >= 13:
-				await ctx.send('레이스 인원이 12명 초과입니다.')
+				await ctx.send('```레이스 인원이 12명 초과입니다.```')
 				return
 			else :
 				race_val = random.sample(range(14, 14+len(racing_member)), len(racing_member))
@@ -1391,8 +1390,8 @@ while True:
 
 				for i in range(len(racing_member)):
 					output +=  str_racing_field[i] + '\n'
-
-
+					
+				
 				result_race = await ctx.send(output + ':traffic_light: 3초 후 경주가 시작됩니다!')
 				await asyncio.sleep(1)
 				await result_race.edit(content = output + ':traffic_light: 2초 후 경주가 시작됩니다!')
@@ -1408,7 +1407,7 @@ while True:
 					test.append(1)
 					test.sort(reverse=True)
 					random_pos.append(test)
-
+				
 				for j in range(len(random_pos[0])):
 					if j%2 == 0:
 						output =  ':camera: :camera_with_flash: :camera: 신나는 레이싱! :camera_with_flash: :camera: :camera_with_flash:\n'
@@ -1425,9 +1424,9 @@ while True:
 
 					for i in range(len(racing_member)):
 						output +=  str_racing_field[i] + '\n'
-
+					
 					await result_race.edit(content = output + ':checkered_flag:  경주 시작!')
-
+				
 				for i in range(len(racing_field)):
 					fr.append(race_info[i][0])
 					fr.append((race_info[i][2])-13)
@@ -1463,7 +1462,7 @@ while True:
 					elif result[i][1] == 12:
 						result[i][1] = ':x:'
 					result_str += result[i][1] + "  " + result[i][0] + "  "
-
+					
 				#print(result)
 				await asyncio.sleep(1)
 				await result_race.edit(content = output + ':tada: 경주 종료!\n' + result_str)
@@ -1475,7 +1474,7 @@ while True:
 		if isinstance(error, CommandNotFound):
 			return
 		raise error
-	
+
 	# 봇이 새로운 메시지를 수신했을때 동작되는 코드입니다.
 	@client.event
 	async def on_message(msg):
@@ -2338,7 +2337,7 @@ while True:
 					if message.content.startswith(command15.strip() + ' '):
 						tmp_sayMessage = message.content
 						sayMessage = tmp_sayMessage[len(command15.strip())+1:]
-						await MakeSound(message.author.display_name +'님이.' + sayMessage, './sound/say')
+						await MakeSound(message.author.display_name +'님이, ' + sayMessage, './sound/say')
 						await client.get_channel(channel).send("```< " + msg.author.display_name + " >님이 \"" + sayMessage + "\"```", tts=False)
 						await PlaySound(voice_client1, './sound/say.wav')
 
@@ -2463,7 +2462,7 @@ while True:
 						#client.clear()
 						raise SystemExit
 
-		await client.process_commands(ori_msg)				
+		await client.process_commands(ori_msg)
 
 	client.loop.create_task(task())
 	try:
@@ -2479,4 +2478,3 @@ while True:
 	print("Bot restarting")
 	client = discord.Client(loop=client.loop)
 	client = commands.Bot(command_prefix=commands.when_mentioned_or(""), description='일상디코봇')
-
