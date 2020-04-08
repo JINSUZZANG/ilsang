@@ -21,6 +21,7 @@ from oauth2client.service_account import ServiceAccountCredentials #정산
 from io import StringIO
 import urllib.request
 from math import ceil, floor
+from discord.ext.commands import Bot
 
 ##################### 로깅 ###########################
 log_stream = StringIO()    
