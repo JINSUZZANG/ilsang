@@ -887,75 +887,6 @@ def handle_exit():
 		except asyncio.CancelledError:
 			pass
 
-# 봇이 구동되었을 때 동작되는 코드입니다.
-@client.event
-async def on_ready():
-	global channel
-	
-	global channel_info
-	global channel_name
-	global channel_id
-	global channel_voice_name
-	global channel_voice_id
-	global channel_type
-	
-	global chkvoicechannel
-	global chflg
-	
-	global endTime
-			
-	print("Logged in as ") #화면에 봇의 아이디, 닉네임이 출력됩니다.
-	print(client.user.name)
-	print(client.user.id)
-	print("===========")
-
-	
-	#await joinVoiceChannel()
-	all_channels = client.get_all_channels()
-	
-	for channel1 in all_channels:
-		channel_type.append(str(channel1.type))
-		channel_info.append(channel1)
-	
-	for i in range(len(channel_info)):
-		if channel_type[i] == "text":
-			channel_name.append(str(channel_info[i].name))
-			channel_id.append(str(channel_info[i].id))
-			
-	for i in range(len(channel_info)):
-		if channel_type[i] == "voice":
-			channel_voice_name.append(str(channel_info[i].name))
-			channel_voice_id.append(str(channel_info[i].id))
-
-	await dbLoad()
-	
-	if basicSetting[6] != "" and basicSetting[7] != "" :
-		#print ('join channel')
-		await JointheVC(client.get_channel(basicSetting[6]), client.get_channel(basicSetting[7]))
-		channel = basicSetting[7]
-		chflg = 1
-
-		print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
-		print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
-		if basicSetting[8] != "":
-			print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
-		if basicSetting[11] != "":
-			print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
-		if basicSetting[18] != "":
-			print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
-		if basicSetting[19] != "":
-			print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
-		if int(basicSetting[13]) != 0 :
-			print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
-			print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
-		else :
-			print('< 보탐봇 재시작 설정안됨 >')
-
-	# 디스코드에는 현재 본인이 어떤 게임을 플레이하는지 보여주는 기능이 있습니다.
-	# 이 기능을 사용하여 봇의 상태를 간단하게 출력해줄 수 있습니다.
-	await client.change_presence(status=discord.Status.dnd, activity=discord.Game(name="!메뉴", type=1), afk=False)
-
-while True:
 	################ 보탐봇 메뉴 출력 ################ 	
 	@client.command(name=command[0][0], aliases=command[0][1:])
 	async def menu_(ctx):
@@ -1475,7 +1406,76 @@ while True:
 		if isinstance(error, CommandNotFound):
 			return
 		raise error
+		
+# 봇이 구동되었을 때 동작되는 코드입니다.
+@client.event
+async def on_ready():
+	global channel
+	
+	global channel_info
+	global channel_name
+	global channel_id
+	global channel_voice_name
+	global channel_voice_id
+	global channel_type
+	
+	global chkvoicechannel
+	global chflg
+	
+	global endTime
+			
+	print("Logged in as ") #화면에 봇의 아이디, 닉네임이 출력됩니다.
+	print(client.user.name)
+	print(client.user.id)
+	print("===========")
 
+	
+	#await joinVoiceChannel()
+	all_channels = client.get_all_channels()
+	
+	for channel1 in all_channels:
+		channel_type.append(str(channel1.type))
+		channel_info.append(channel1)
+	
+	for i in range(len(channel_info)):
+		if channel_type[i] == "text":
+			channel_name.append(str(channel_info[i].name))
+			channel_id.append(str(channel_info[i].id))
+			
+	for i in range(len(channel_info)):
+		if channel_type[i] == "voice":
+			channel_voice_name.append(str(channel_info[i].name))
+			channel_voice_id.append(str(channel_info[i].id))
+
+	await dbLoad()
+	
+	if basicSetting[6] != "" and basicSetting[7] != "" :
+		#print ('join channel')
+		await JointheVC(client.get_channel(basicSetting[6]), client.get_channel(basicSetting[7]))
+		channel = basicSetting[7]
+		chflg = 1
+
+		print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
+		print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
+		if basicSetting[8] != "":
+			print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
+		if basicSetting[11] != "":
+			print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
+		if basicSetting[18] != "":
+			print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
+		if basicSetting[19] != "":
+			print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
+		if int(basicSetting[13]) != 0 :
+			print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
+			print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
+		else :
+			print('< 보탐봇 재시작 설정안됨 >')
+
+	# 디스코드에는 현재 본인이 어떤 게임을 플레이하는지 보여주는 기능이 있습니다.
+	# 이 기능을 사용하여 봇의 상태를 간단하게 출력해줄 수 있습니다.
+	await client.change_presence(status=discord.Status.dnd, activity=discord.Game(name="!메뉴", type=1), afk=False)
+
+while True:
 	# 봇이 새로운 메시지를 수신했을때 동작되는 코드입니다.
 	@client.event
 	async def on_message(msg):
@@ -2446,7 +2446,7 @@ while True:
 							contents12 = repo_restart.get_contents("restart.txt")
 							repo_restart.update_file(contents12.path, "restart_1", "", contents12.sha)
 
-################ 명존쎄 ################ 
+				################ 명존쎄 ################ 
 				for command7 in command[7] :	
 					if message.content == command7.strip():
 						await client.get_channel(channel).send( '< 보탐봇 명치 맞고 숨 고르기 중! 잠시만요! >', tts=False)
