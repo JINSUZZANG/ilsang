@@ -2446,7 +2446,8 @@ while True:
 							contents12 = repo_restart.get_contents("restart.txt")
 							repo_restart.update_file(contents12.path, "restart_1", "", contents12.sha)
 
-				################ 명존쎄 ################ 
+		await client.process_commands(ori_msg)				
+################ 명존쎄 ################ 
 				for command7 in command[7] :	
 					if message.content == command7.strip():
 						await client.get_channel(channel).send( '< 보탐봇 명치 맞고 숨 고르기 중! 잠시만요! >', tts=False)
@@ -2462,8 +2463,6 @@ while True:
 						await voice_client1.disconnect()
 						#client.clear()
 						raise SystemExit
-
-		await client.process_commands(ori_msg)
 
 	client.loop.create_task(task())
 	try:
