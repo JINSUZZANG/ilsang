@@ -2446,7 +2446,6 @@ while True:
 							contents12 = repo_restart.get_contents("restart.txt")
 							repo_restart.update_file(contents12.path, "restart_1", "", contents12.sha)
 
-		await client.process_commands(ori_msg)				
 ################ 명존쎄 ################ 
 				for command7 in command[7] :	
 					if message.content == command7.strip():
@@ -2463,6 +2462,8 @@ while True:
 						await voice_client1.disconnect()
 						#client.clear()
 						raise SystemExit
+
+		await client.process_commands(ori_msg)				
 
 	client.loop.create_task(task())
 	try:
