@@ -359,7 +359,8 @@ def init():
 
 	for i in range(len(emo_inputData)):
 		tmp_emo = emo_inputData[i][8:].rstrip('\r')
-		tmp_racing_unit.append(tmp_emo)
+		if tmp_emo != "":
+			tmp_racing_unit.append(tmp_emo)
 	
 	################# 리젠보스 시간 정렬 ######################
 	regenData = []
