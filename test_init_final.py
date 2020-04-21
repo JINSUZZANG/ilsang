@@ -1149,8 +1149,10 @@ while True:
 
 	################ 텍스트채널이동 ################ 
 	@client.command(name=command[4][0], aliases=command[4][1:])
-	async def chMove_(ctx, *, msg: str):	
+	async def chMove_(ctx):
+		global basicSetting
 		if ctx.message.channel.id == basicSetting[7]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			for i in range(len(channel_name)):
 				if  channel_name[i] == msg:
 					channel = int(channel_id[i])
@@ -1174,7 +1176,7 @@ while True:
 		else:
 			return
 
-				################ 보탐봇 음성채널 소환 ################ 
+	################ 보탐봇 음성채널 소환 ################ 
 	@client.command(name=command[5][0], aliases=command[5][1:])
 	async def connectVoice_(ctx):
 		global voice_client1
@@ -1244,6 +1246,8 @@ while True:
 				await ctx.send('<불러오기 완료>', tts=False)
 			else:
 				await ctx.send('<보스타임 정보가 없습니다.>', tts=False)
+		else:
+			return
 
 	################ 저장된 정보 초기화 ################
 	@client.command(name=command[7][0], aliases=command[7][1:])
@@ -1429,8 +1433,9 @@ while True:
 
 	################ 분배 결과 출력 ################ 
 	@client.command(name=command[11][0], aliases=command[11][1:])
-	async def bunbae_(ctx, *, msg :str):
+	async def bunbae_(ctx):
 		if ctx.message.channel.id == basicSetting[7]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			separate_money = []
 			separate_money = msg.split(" ")
 			num_sep = floor(int(separate_money[0]))
@@ -1452,8 +1457,9 @@ while True:
 
 	################ 사다리 결과 출력 ################ 
 	@client.command(name=command[12][0], aliases=command[12][1:])
-	async def ladder_(ctx, *, msg :str):
+	async def ladder_(ctx):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[8]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			ladder = []
 			ladder = msg.split(" ")
 			num_cong = int(ladder[0])
@@ -1464,8 +1470,9 @@ while True:
 
 	################ 정산확인 ################ 
 	@client.command(name=command[13][0], aliases=command[13][1:])
-	async def jungsan_(ctx, *, msg: str):
+	async def jungsan_(ctx):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[11]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			if basicSetting[10] !="" and basicSetting[12] !="" and basicSetting[14] !="" and basicSetting[15] !="" and basicSetting[16] !=""  :
 				SearchID = msg
 				gc = gspread.authorize(credentials)
@@ -1485,7 +1492,7 @@ while True:
 
 	################ 보스타임 일괄 설정 ################
 	@client.command(name=command[14][0], aliases=command[14][1:])
-	async def allBossInput_(ctx, *, msg:str): 
+	async def allBossInput_(ctx):
 		global basicSetting
 		global bossData
 		global fixed_bossData
@@ -1506,6 +1513,7 @@ while True:
 		global bossMungCnt
 		
 		if ctx.message.channel.id == basicSetting[7]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			for i in range(bossNum):
 				tmp_msg = msg
 				if len(tmp_msg) > 3 :
@@ -1639,8 +1647,9 @@ while True:
 
 	################ 음성파일 생성 후 재생 ################ 			
 	@client.command(name=command[16][0], aliases=command[16][1:])
-	async def playText_(ctx, *, msg: str):
+	async def playText_(ctx):
 		if ctx.message.channel.id == basicSetting[7]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			sayMessage = msg
 			await MakeSound(ctx.message.author.display_name +'님이, ' + sayMessage, './sound/say')
 			await ctx.send("```< " + ctx.author.display_name + " >님이 \"" + sayMessage + "\"```", tts=False)
@@ -1709,8 +1718,9 @@ while True:
 
 	################ 봇 상태메세지 변경 ################ 
 	@client.command(name=command[21][0], aliases=command[21][1:])
-	async def botStatus_(ctx, *, msg: str):
+	async def botStatus_(ctx):
 		if ctx.message.channel.id == basicSetting[7]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			sayMessage = msg
 			await client.change_presence(status=discord.Status.dnd, activity=discord.Game(name=sayMessage, type=1), afk = False)
 			await ctx.send( '< 상태메세지 변경완료 >', tts=False)
@@ -2065,9 +2075,9 @@ while True:
 	@client.command(name=command[25][0], aliases=command[25][1:]) 
 	async def killList_(ctx):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
-			msg = ctx.message.content.split(" ")
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			if len(msg) > 1:
-				sayMessage = " ".join(msg[1:])
+				sayMessage = msg
 
 				tmp_fk = []
 				listchk = 0
@@ -2115,11 +2125,11 @@ while True:
 
 	################ 킬삭제 ################ 
 	@client.command(name=command[26][0], aliases=command[26][1:])
-	async def killDel_(ctx, *, msg: str):
+	async def killDel_(ctx):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			sayMessage = msg
 
-			tmp_fk = []
 			indexchk = 0
 
 			if sayMessage != ' ':
@@ -2139,8 +2149,9 @@ while True:
 
 	################ 경주 ################ 
 	@client.command(name=command[27][0], aliases=command[27][1:])
-	async def race_(ctx, *, msg: str):
+	async def race_(ctx):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[19]:
+			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			race_info = []
 			fr = []
 			racing_field = []
@@ -2298,6 +2309,8 @@ while True:
 	@client.event
 	async def on_command_error(ctx, error):
 		if isinstance(error, CommandNotFound):
+			return
+		elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
 			return
 		raise error
 
