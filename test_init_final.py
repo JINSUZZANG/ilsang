@@ -2589,4 +2589,4 @@ while True:
 
 	print("Bot restarting")
 	client = discord.Client(loop=client.loop)
-	client = commands.Bot(ccommand_prefix="", help_command = None, description='일상디코봇')
+	client = commands.Bot(command_prefix="", help_command = None, description='일상디코봇')
