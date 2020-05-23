@@ -1057,8 +1057,8 @@ while True:
 				print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
 			if basicSetting[10] != "":
 				print('< 사다리채널 [' + client.get_channel(int(basicSetting[10])).name + '] 접속완료>')
-			if basicSetting[13] != "":
-				print('< 정산채널 [' + client.get_channel(int(basicSetting[13])).name + '] 접속완료>')
+			if basicSetting[11] != "":
+				print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
 			if basicSetting[20] != "":
 				print('< 척살채널 [' + client.get_channel(int(basicSetting[20])).name + '] 접속완료>')
 			if int(basicSetting[12]) != 0 :
