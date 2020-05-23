@@ -1063,9 +1063,9 @@ while True:
 				print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
 			if basicSetting[19] != "":
 				print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
-			if int(basicSetting[12]) != 0 :
+			if int(basicSetting[13]) != 0 :
 				print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
-				print('< 보탐봇 재시작 주기 ' + basicSetting[12] + '일 >')
+				print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
 			else :
 				print('< 보탐봇 재시작 설정안됨 >')
 
