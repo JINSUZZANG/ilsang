@@ -1030,18 +1030,18 @@ while True:
 
 			print ('[ ', basicSetting[7], ' ]')
 			print ('] ', ctx.message.channel.name, ' [')
-			
-			basicSetting[7] = channel
-			
+
 			inidata_textCH = repo.get_contents("test_setting.ini")
 			file_data_textCH = base64.b64decode(inidata_textCH.content)
 			file_data_textCH = file_data_textCH.decode('utf-8')
 			inputData_textCH = file_data_textCH.split('\n')
 			
 			for i in range(len(inputData_textCH)):
-				if inputData_textCH[i].startswith('textchannel'):
+				if inputData_textCH[i] == 'textchannel = \r':
 					inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
-
+					basicSetting[7] = channel
+					#print ('======', inputData_text[i])
+			
 			result_textCH = '\n'.join(inputData_textCH)
 			
 			#print (result_textCH)
