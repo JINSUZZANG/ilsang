@@ -22,6 +22,7 @@ from io import StringIO
 import urllib.request
 from math import ceil, floor
 import time
+from async_timeout import timeout
 
 ##################### 로깅 ###########################
 log_stream = StringIO()    
