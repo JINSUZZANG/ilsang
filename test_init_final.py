@@ -648,10 +648,12 @@ async def MakeSound(saveSTR, filename):
 	tts.save('./' + filename + '.mp3')
 	'''
 	try:
-		encText = urllib.parse.quote(saveSTR)
-		urllib.request.urlretrieve("https://clova.ai/proxy/voice/api/tts?text=" + encText + "%0A&voicefont=1&format=wav",filename + '.wav')
-	except Exception as e:
-		print (e)
+		async with timeout(30):  # 3 minutes
+			encText = urllib.parse.quote(saveSTR)
+			urllib.request.urlretrieve("https://clova.ai/proxy/voice/api/tts?text=" + encText + "%0A&voicefont=1&format=wav",filename + '.wav')
+	#except Exception as e:
+	except asyncio.TimeoutError:
+		#print (e)
 		tts = gTTS(saveSTR, lang = 'ko')
 		tts.save('./' + filename + '.wav')
 		pass
