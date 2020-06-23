@@ -1069,7 +1069,7 @@ while True:
 			contents = repo.get_contents("test_setting.ini")
 			repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
 
-			await ctx.send(f"< 텍스트채널 [{ctx.message.channel.name}] 접속완료 >\n< 음성채널 접속 후 [{command[6][0]}] 명령을 사용 하세요 >", tts=False)
+			await ctx.send(f"< 텍스트채널 [{ctx.message.channel.name}] 접속완료 >\n< 음성채널 접속 후 [{command[5][0]}] 명령을 사용 하세요 >", tts=False)
 			
 			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
 			if basicSetting[6] != "":
@@ -1125,7 +1125,7 @@ while True:
 				contents = repo.get_contents("test_setting.ini")
 				repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
 
-				return await ctx.send(f"명령어 채널이 **[{ctx.author.guild.name}]** 서버 **[{ctx.message.channel.name}]** 채널로 새로 설정되었습니다.\n< 음성채널 접속 후 [{command[6][0]}] 명령을 사용 하세요 >")
+				return await ctx.send(f"명령어 채널이 **[{ctx.author.guild.name}]** 서버 **[{ctx.message.channel.name}]** 채널로 새로 설정되었습니다.\n< 음성채널 접속 후 [{command[5][0]}] 명령을 사용 하세요 >")
 			else:
 				return await ctx.send(f"초기화가 취소되었습니다.\n**[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널에서 사용해주세요!")
 
