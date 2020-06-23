@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*- 
 
-################ Server V16.5 #####################
+################ Server Ver. 17 (2020. 6. 23.) #####################
 
 import os
 import sys
@@ -21,13 +21,6 @@ from oauth2client.service_account import ServiceAccountCredentials #정산
 from io import StringIO
 import urllib.request
 from math import ceil, floor
-import uuid
-import requests
-import rsa
-import lzstring
-from urllib3.util.retry import Retry
-from requests.adapters import HTTPAdapter
-
 
 ##################### 로깅 ###########################
 log_stream = StringIO()    
@@ -84,9 +77,7 @@ client = commands.Bot(command_prefix="", help_command = None, description='일�
 access_token = os.environ["BOT_TOKEN"]			
 git_access_token = os.environ["GIT_TOKEN"]			
 git_access_repo = os.environ["GIT_REPO"]			
-git_access_repo_restart = os.environ["GIT_REPO_RESTART"]	
-naver_ID = 	os.environ["NAVER_ID"]	
-naver_PW =  os.environ["NAVER_PW"]	
+git_access_repo_restart = os.environ["GIT_REPO_RESTART"]			
 
 g = Github(git_access_token)
 repo = g.get_repo(git_access_repo)
@@ -233,7 +224,6 @@ def init():
 	basicSetting.append(inputData[10][13:])     #basicSetting[17] : 멍삭제횟수
 	basicSetting.append(inputData[5][14:])     #basicSetting[18] : kill채널 ID
 	basicSetting.append(inputData[6][16:])     #basicSetting[19] : racing 채널 ID
-	basicSetting.append(inputData[19][12:])     #basicSetting[20] : racing 채널 ID
 
 	############## 보탐봇 명령어 리스트 #####################
 	for i in range(len(command_inputData)):
@@ -651,58 +641,15 @@ async def task():
 
 		await asyncio.sleep(1) # task runs every 60 seconds
 
-#####음성파일 생성을 위한 로그인함수들...
-def encrypt(key_str, uid, upw):
-	def naver_style_join(l):
-		return ''.join([chr(len(s)) + s for s in l])
+#mp3 파일 생성함수(gTTS 이용, 남성목소리)
+async def MakeSound(saveSTR, filename):
 	
-	sessionkey, keyname, e_str, n_str = key_str.split(',')
-	e, n = int(e_str, 16), int(n_str, 16)
-	
-	message = naver_style_join([sessionkey, uid, upw]).encode()
-	
-	pubkey = rsa.PublicKey(e, n)
-	encrypted = rsa.encrypt(message, pubkey)
-	
-	return keyname, encrypted.hex()
-
-def encrypt_account(uid, upw):
-	key_str = requests.get('https://nid.naver.com/login/ext/keys.nhn').content.decode("utf-8")
-
-	return encrypt(key_str, uid, upw)
-
-def naver_session(nid, npw):
-	encnm, encpw = encrypt_account(nid, npw)
-
-	s = requests.Session()
-
-	retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-
-	s.mount('https://', HTTPAdapter(max_retries=retries))
-	
-	request_headers = { 'User-agent': 'Mozilla/5.0' }
-
-	bvsd_uuid = uuid.uuid4()
-	encData = '{"a":"%s-4","b":"1.3.4","d":[{"i":"id","b":{"a":["0,%s"]},"d":"%s","e":false,"f":false},{"i":"%s","e":true,"f":false}],"h":"1f","i":{"a":"chorme/83.0"}}' % (bvsd_uuid, nid, nid, npw)
-	bvsd = '{"uuid":"%s","encData":"%s"}' % (bvsd_uuid, lzstring.LZString.compressToEncodedURIComponent(encData))
-
-	resp = s.post('https://nid.naver.com/nidlogin.login', data={ 'svctype': '0', 'enctp': '1', 'encnm': encnm, 'enc_url': 'http0X0.0000000000001P-10220.0000000.000000www.naver.com', 'url': 'www.naver.com', 'smart_level': '1', 'encpw': encpw, 'bvsd': bvsd }, headers=request_headers)
-	finalize_url = re.search(r'location\.replace\("([^"]+)"\)', resp.content.decode("utf-8")).group(1)
-	
-	s.get(finalize_url)
-
-	return s
-
-#mp3 파일 생성함수
-async def MakeSound(Nid, Npw, saveSTR, filename):
-	'''
 	tts = gTTS(saveSTR, lang = 'ko')
 	tts.save('./' + filename + '.wav')
-	'''
+	
 	'''
 	try:
 		encText = urllib.parse.quote(saveSTR)
-		#print(encText)
 		urllib.request.urlretrieve("https://clova.ai/proxy/voice/api/tts?text=" + encText + "%0A&voicefont=1&format=wav",filename + '.wav')
 	except Exception as e:
 		print (e)
@@ -710,23 +657,6 @@ async def MakeSound(Nid, Npw, saveSTR, filename):
 		tts.save('./' + filename + '.wav')
 		pass
 	'''
-	if Nid != "" and Npw != "":
-		s = naver_session(Nid, Npw)
-		encText = urllib.parse.quote(saveSTR)
-		if basicSetting[20] == '1':
-			pp = s.get("https://clovadubbing.naver.com/project/voicefont/3578225/preview?text="+ encText)
-		elif basicSetting[20] == '2':
-			pp = s.get("https://clovadubbing.naver.com/project/voicefont/3622215/preview?text="+ encText)
-		else:
-			pp = s.get("https://clovadubbing.naver.com/project/voicefont/3578222/preview?text="+ encText)
-
-		result = pp.content
-		with open('./' + filename + '.wav', 'wb') as f:
-			f.write(result)
-	else:
-		tts = gTTS(saveSTR, lang = 'ko')
-		tts.save('./' + filename + '.wav')
-		
 #mp3 파일 재생함수	
 async def PlaySound(voiceclient, filename):
 	source = discord.FFmpegPCMAudio(filename)
@@ -1021,6 +951,8 @@ def handle_exit():
 # 봇이 구동되었을 때 동작되는 코드입니다.
 @client.event
 async def on_ready():
+	global basicSetting
+
 	global channel
 	
 	global voice_client1
@@ -1036,6 +968,8 @@ async def on_ready():
 	global chflg
 	
 	global endTime
+	global curr_guild_info
+	global setting_channel_name
 			
 	print("Logged in as ") #화면에 봇의 아이디, 닉네임이 출력됩니다.
 	print(client.user.name)
@@ -1043,7 +977,7 @@ async def on_ready():
 	print("===========")
 
 	
-	#await joinVoiceChannel()
+	all_guilds = client.guilds
 	all_channels = client.get_all_channels()
 	
 	for channel1 in all_channels:
@@ -1063,26 +997,35 @@ async def on_ready():
 	await dbLoad()
 	
 	if basicSetting[6] != "" and basicSetting[7] != "" :
-		#print ('join channel')
-		voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
-		channel = basicSetting[7]
+		if str(basicSetting[6]) in channel_voice_id and str(basicSetting[7]) in channel_id:
+			for guild in all_guilds:
+				for text_channel in guild.text_channels:
+					if basicSetting[7] == text_channel.id:
+						curr_guild_info = guild
 
-		print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
-		print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
-		if basicSetting[8] != "":
-			print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
-		if basicSetting[11] != "":
-			print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
-		if basicSetting[18] != "":
-			print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
-		if basicSetting[19] != "":
-			print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
-		if int(basicSetting[13]) != 0 :
-			print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
-			print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
-		else :
-			print('< 보탐봇 재시작 설정안됨 >')
-		chflg = 1
+			voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
+			channel = basicSetting[7]
+
+			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
+			print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
+			if basicSetting[8] != "":
+				print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
+			if basicSetting[11] != "":
+				print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
+			if basicSetting[18] != "":
+				print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
+			if basicSetting[19] != "":
+				print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
+			if int(basicSetting[13]) != 0 :
+				print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
+				print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
+			else :
+				print('< 보탐봇 재시작 설정안됨 >')
+			chflg = 1
+		else:
+			basicSetting[6] = ""
+			basicSetting[7] = ""
+			print(f"설정된 채널 값이 잘못 됐습니다. **[{command[0][0]}]** 명령어 먼저 입력하여 사용해주시기 바랍니다.")
 
 	# 디스코드에는 현재 본인이 어떤 게임을 플레이하는지 보여주는 기능이 있습니다.
 	# 이 기능을 사용하여 봇의 상태를 간단하게 출력해줄 수 있습니다.
@@ -1090,6 +1033,7 @@ async def on_ready():
 
 while True:
 	################ 보탐봇 입장 ################ 	
+	@commands.has_permissions(manage_messages=True)
 	@client.command(name=command[0][0], aliases=command[0][1:])
 	async def join_(ctx):
 		global basicSetting
@@ -1108,7 +1052,7 @@ while True:
 			inputData_textCH = file_data_textCH.split('\n')
 			
 			for i in range(len(inputData_textCH)):
-				if inputData_textCH[i] == 'textchannel = \r':
+				if inputData_textCH[i].startswith("textchannel ="):
 					inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
 					basicSetting[7] = channel
 					#print ('======', inputData_text[i])
@@ -1120,7 +1064,7 @@ while True:
 			contents = repo.get_contents("test_setting.ini")
 			repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
 
-			await ctx.send('< 텍스트채널 [' + ctx.message.channel.name + '] 접속완료 >\n< 음성채널 접속 후 [소환] 명령을 사용 하세요 >', tts=False)
+			await ctx.send(f"< 텍스트채널 [{ctx.message.channel.name}] 접속완료 >\n< 음성채널 접속 후 [{command[6][0]}] 명령을 사용 하세요 >", tts=False)
 			
 			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
 			if basicSetting[6] != "":
@@ -1142,7 +1086,47 @@ while True:
 
 			chflg = 1
 		else:
-			await ctx.send('이미 [' + ctx.guild.get_channel(basicSetting[7]).name + '] 에 입장돼 있습니다. 해당 채널에서 명령어를 사용해주세요.!\n', tts=False)
+			emoji_list : list = ["⭕", "❌"]
+			guild_error_message = await ctx.send(f"이미 **[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널이 명령어 채널로 설정되어 있습니다.\n해당 채널로 명령어 채널을 변경 하시려면 ⭕ 그대로 사용하시려면 ❌ 를 눌러주세요.\n(10초이내 미입력시 기존 설정 그대로 설정됩니다.)", tts=False)
+
+			for emoji in emoji_list:
+				await guild_error_message.add_reaction(emoji)
+
+			def reaction_check(reaction, user):
+				return (reaction.message.id == guild_error_message.id) and (user.id == ctx.author.id) and (str(reaction) in emoji_list)
+			try:
+				reaction, user = await client.wait_for('reaction_add', check = reaction_check, timeout = 10)
+			except asyncio.TimeoutError:
+				return await ctx.send(f"시간이 초과됐습니다. **[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널에서 사용해주세요!")
+
+			if str(reaction) == "⭕":
+				basicSetting[6] = ""
+				basicSetting[7] = int(ctx.message.channel.id)
+
+				print ('[ ', basicSetting[7], ' ]')
+				print ('] ', ctx.message.channel.name, ' [')
+
+				inidata_textCH = repo.get_contents("test_setting.ini")
+				file_data_textCH = base64.b64decode(inidata_textCH.content)
+				file_data_textCH = file_data_textCH.decode('utf-8')
+				inputData_textCH = file_data_textCH.split('\n')
+				
+				for i in range(len(inputData_textCH)):
+					if inputData_textCH[i].startswith("textchannel ="):
+						inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
+						basicSetting[7] = channel
+						#print ('======', inputData_text[i])
+				
+				result_textCH = '\n'.join(inputData_textCH)
+				
+				#print (result_textCH)
+				
+				contents = repo.get_contents("test_setting.ini")
+				repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
+
+				return await ctx.send(f"명령어 채널이 **[{ctx.author.guild.name}]** 서버 **[{ctx.message.channel.name}]** 채널로 새로 설정되었습니다.\n< 음성채널 접속 후 [{command[6][0]}] 명령을 사용 하세요 >")
+			else:
+				return await ctx.send(f"초기화가 취소되었습니다.\n**[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널에서 사용해주세요!")
 
 	################ 보탐봇 메뉴 출력 ################ 	
 	@client.command(name=command[1][0], aliases=command[1][1:])
@@ -1152,7 +1136,7 @@ while True:
 			command_list += ','.join(command[2]) + '\n'     #!설정확인
 			command_list += ','.join(command[3]) + '\n'     #!채널확인
 			command_list += ','.join(command[4]) + ' [채널명]\n'     #!채널이동
-			command_list += ','.join(command[5]) + '\n'     #!소환
+			command_list += ','.join(command[5]) + ' ※ 관리자만 실행 가능\n'     #!소환
 			command_list += ','.join(command[6]) + '\n'     #!불러오기
 			command_list += ','.join(command[7]) + '\n'     #!초기화
 			command_list += ','.join(command[8]) + '\n'     #!명치
@@ -1202,7 +1186,7 @@ while True:
 	async def setting_(ctx):	
 		#print (ctx.message.channel.id)
 		if ctx.message.channel.id == basicSetting[7]:
-			setting_val = '보탐봇버전 : Server Ver. 16.5 (2020. 6. 3.)\n'
+			setting_val = '보탐봇버전 : Server Ver. 17 (2020. 6. 23.)\n'
 			setting_val += '음성채널 : ' + client.get_channel(basicSetting[6]).name + '\n'
 			setting_val += '텍스트채널 : ' + client.get_channel(basicSetting[7]).name +'\n'
 			if basicSetting[8] != "" :
@@ -1315,7 +1299,7 @@ while True:
 			inputData_textCH = file_data_textCH.split('\n')
 			
 			for i in range(len(inputData_textCH)):
-				if inputData_textCH[i] == 'textchannel = ' + str(basicSetting[7]) + '\r':
+				if inputData_textCH[i].startswith('textchannel ='):
 					inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
 					basicSetting[7] = int(channel)
 			
@@ -1324,12 +1308,13 @@ while True:
 			contents = repo.get_contents("test_setting.ini")
 			repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
 			
-			await ctx.send( f'명령어 채널이 < {ctx.message.channel.name} >에서 < {client.get_channel(channel).name} > 로 이동되었습니다.', tts=False)
-			await client.get_channel(channel).send( f'< {client.get_channel(channel).name} 이동완료 >', tts=False)
+			await ctx.send( f"명령어 채널이 < {ctx.message.channel.name} >에서 < {client.get_channel(channel).name} > 로 이동되었습니다.", tts=False)
+			await client.get_channel(channel).send( f"< {client.get_channel(channel).name} 이동완료 >", tts=False)
 		else:
 			return
 
 	################ 보탐봇 음성채널 소환 ################ 
+	@commands.has_permissions(manage_messages=True)
 	@client.command(name=command[5][0], aliases=command[5][1:])
 	async def connectVoice_(ctx):
 		global voice_client1
@@ -1359,7 +1344,7 @@ while True:
 				inputData_voiceCH = file_data_voiceCH.split('\n')
 
 				for i in range(len(inputData_voiceCH)):
-					if inputData_voiceCH[i] == 'voicechannel = \r':
+					if inputData_voiceCH[i].startswith('voicechannel ='):
 						inputData_voiceCH[i] = 'voicechannel = ' + str(voice_channel.id) + '\r'
 						basicSetting[6] = int(voice_channel.id)
 
@@ -1375,7 +1360,7 @@ while True:
 				inputData_voiceCH = file_data_voiceCH.split('\n')
 
 				for i in range(len(inputData_voiceCH)):
-					if inputData_voiceCH[i] == 'voicechannel = ' + str(basicSetting[6]) + '\r':
+					if inputData_voiceCH[i].startswith('voicechannel ='):
 						inputData_voiceCH[i] = 'voicechannel = ' + str(voice_channel.id) + '\r'
 						basicSetting[6] = int(voice_channel.id)
 
@@ -1800,7 +1785,7 @@ while True:
 		if ctx.message.channel.id == basicSetting[7]:
 			msg = ctx.message.content[len(ctx.invoked_with)+1:]
 			sayMessage = msg
-			await MakeSound(naver_ID, naver_PW, ctx.message.author.display_name +'님이, ' + sayMessage, './sound/say')
+			await MakeSound(ctx.message.author.display_name +'님이, ' + sayMessage, './sound/say')
 			await ctx.send("```< " + ctx.author.display_name + " >님이 \"" + sayMessage + "\"```", tts=False)
 			await PlaySound(voice_client1, './sound/say.wav')
 		else:
@@ -2542,6 +2527,8 @@ while True:
 			return
 		elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
 			return
+		elif isinstance(error, discord.ext.commands.errors.MissingPermissions):
+			return await ctx.send(f"**[{ctx.message.content}]** 명령을 사용할 권한이 없습니다.!")
 		raise error
 
 	# 봇이 새로운 메시지를 수신했을때 동작되는 코드입니다.
