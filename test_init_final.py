@@ -1009,7 +1009,7 @@ async def on_ready():
 			setting_channel_name = client.get_channel(basicSetting[7]).name
 
 			now = datetime.datetime.now() + datetime.timedelta(hours = int(basicSetting[0]))
-			
+
 			print('< 접속시간 [' + now.strftime('%Y-%m-%d ') + now.strftime('%H:%M:%S') + '] >')
 			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
 			print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
@@ -1118,13 +1118,9 @@ while True:
 				
 				for i in range(len(inputData_textCH)):
 					if inputData_textCH[i].startswith("textchannel ="):
-						inputData_textCH[i] = 'textchannel = ' + str(channel) + '\r'
-						basicSetting[7] = channel
-						#print ('======', inputData_text[i])
+						inputData_textCH[i] = 'textchannel = ' + str(basicSetting[7]) + '\r'
 				
 				result_textCH = '\n'.join(inputData_textCH)
-				
-				#print (result_textCH)
 				
 				contents = repo.get_contents("test_setting.ini")
 				repo.update_file(contents.path, "test_setting", result_textCH, contents.sha)
