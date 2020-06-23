@@ -1006,6 +1006,11 @@ async def on_ready():
 			voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
 			channel = basicSetting[7]
 
+			setting_channel_name = client.get_channel(basicSetting[7]).name
+
+			now = datetime.datetime.now() + datetime.timedelta(hours = int(basicSetting[0]))
+			
+			print('< 접속시간 [' + now.strftime('%Y-%m-%d ') + now.strftime('%H:%M:%S') + '] >')
 			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
 			print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
 			if basicSetting[8] != "":
