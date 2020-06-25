@@ -997,12 +997,6 @@ async def on_ready():
 	await dbLoad()
 	
 	if basicSetting[6] != "" and basicSetting[7] != "" :
-		if str(basicSetting[6]) in channel_voice_id and str(basicSetting[7]) in channel_id:
-			for guild in all_guilds:
-				for text_channel in guild.text_channels:
-					if basicSetting[7] == text_channel.id:
-						curr_guild_info = guild
-
 			voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
 			channel = basicSetting[7]
 
@@ -1091,6 +1085,11 @@ while True:
 
 			chflg = 1
 		else:
+			if str(basicSetting[7]) in channel_id:
+				for guild in all_guilds:
+					for text_channel in guild.text_channels:
+						if basicSetting[7] == text_channel.id:
+							curr_guild_info = guild
 			emoji_list : list = ["⭕", "❌"]
 			guild_error_message = await ctx.send(f"이미 **[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널이 명령어 채널로 설정되어 있습니다.\n해당 채널로 명령어 채널을 변경 하시려면 ⭕ 그대로 사용하시려면 ❌ 를 눌러주세요.\n(10초이내 미입력시 기존 설정 그대로 설정됩니다.)", tts=False)
 
