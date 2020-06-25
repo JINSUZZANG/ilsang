@@ -995,37 +995,36 @@ async def on_ready():
 			channel_voice_id.append(str(channel_info[i].id))
 
 	await dbLoad()
-	
-	if basicSetting[6] != "" and basicSetting[7] != "" :
-		if str(basicSetting[6]) in channel_voice_id and str(basicSetting[7]) in channel_id:
-			voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
-			channel = basicSetting[7]
 
-			setting_channel_name = client.get_channel(basicSetting[7]).name
+	if str(basicSetting[6]) in channel_voice_id and str(basicSetting[7]) in channel_id:
+		voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
+		channel = basicSetting[7]
 
-			now = datetime.datetime.now() + datetime.timedelta(hours = int(basicSetting[0]))
+		setting_channel_name = client.get_channel(basicSetting[7]).name
 
-			print('< 접속시간 [' + now.strftime('%Y-%m-%d ') + now.strftime('%H:%M:%S') + '] >')
-			print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
-			print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
-			if basicSetting[8] != "":
-				print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
-			if basicSetting[11] != "":
-				print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
-			if basicSetting[18] != "":
-				print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
-			if basicSetting[19] != "":
-				print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
-			if int(basicSetting[13]) != 0 :
-				print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
-				print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
-			else :
-				print('< 보탐봇 재시작 설정안됨 >')
-			chflg = 1
-		else:
-			basicSetting[6] = ""
-			basicSetting[7] = ""
-			print(f"설정된 채널 값이 잘못 됐습니다. **[{command[0][0]}]** 명령어 먼저 입력하여 사용해주시기 바랍니다.")
+		now = datetime.datetime.now() + datetime.timedelta(hours = int(basicSetting[0]))
+
+		print('< 접속시간 [' + now.strftime('%Y-%m-%d ') + now.strftime('%H:%M:%S') + '] >')
+		print('< 텍스트채널 [' + client.get_channel(basicSetting[7]).name + '] 접속완료>')
+		print('< 음성채널 [' + client.get_channel(basicSetting[6]).name + '] 접속완료>')
+		if basicSetting[8] != "":
+			print('< 사다리채널 [' + client.get_channel(int(basicSetting[8])).name + '] 접속완료>')
+		if basicSetting[11] != "":
+			print('< 정산채널 [' + client.get_channel(int(basicSetting[11])).name + '] 접속완료>')
+		if basicSetting[18] != "":
+			print('< 척살채널 [' + client.get_channel(int(basicSetting[18])).name + '] 접속완료>')
+		if basicSetting[19] != "":
+			print('< 경주채널 [' + client.get_channel(int(basicSetting[19])).name + '] 접속완료>')
+		if int(basicSetting[13]) != 0 :
+			print('< 보탐봇 재시작 시간 ' + endTime.strftime('%Y-%m-%d ') + endTime.strftime('%H:%M:%S') + ' >')
+			print('< 보탐봇 재시작 주기 ' + basicSetting[13] + '일 >')
+		else :
+			print('< 보탐봇 재시작 설정안됨 >')
+		chflg = 1
+	else:
+		basicSetting[6] = ""
+		basicSetting[7] = ""
+		print(f"설정된 채널 값이 없거나 잘못 됐습니다. **[{command[0][0]}]** 명령어 먼저 입력하여 사용해주시기 바랍니다.")
 
 	# 디스코드에는 현재 본인이 어떤 게임을 플레이하는지 보여주는 기능이 있습니다.
 	# 이 기능을 사용하여 봇의 상태를 간단하게 출력해줄 수 있습니다.
