@@ -968,8 +968,8 @@ async def on_ready():
 	global chflg
 	
 	global endTime
-	global curr_guild_info
 	global setting_channel_name
+	global all_guilds
 			
 	print("Logged in as ") #화면에 봇의 아이디, 닉네임이 출력됩니다.
 	print(client.user.name)
@@ -997,6 +997,7 @@ async def on_ready():
 	await dbLoad()
 	
 	if basicSetting[6] != "" and basicSetting[7] != "" :
+		if str(basicSetting[6]) in channel_voice_id and str(basicSetting[7]) in channel_id:
 			voice_client1 = await client.get_channel(basicSetting[6]).connect(reconnect=True)
 			channel = basicSetting[7]
 
@@ -1085,11 +1086,11 @@ while True:
 
 			chflg = 1
 		else:
-			if str(basicSetting[7]) in channel_id:
-				for guild in all_guilds:
-					for text_channel in guild.text_channels:
-						if basicSetting[7] == text_channel.id:
-							curr_guild_info = guild
+			for guild in all_guilds:
+				for text_channel in guild.text_channels:
+					if basicSetting[7] == text_channel.id:
+						curr_guild_info = guild
+
 			emoji_list : list = ["⭕", "❌"]
 			guild_error_message = await ctx.send(f"이미 **[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널이 명령어 채널로 설정되어 있습니다.\n해당 채널로 명령어 채널을 변경 하시려면 ⭕ 그대로 사용하시려면 ❌ 를 눌러주세요.\n(10초이내 미입력시 기존 설정 그대로 설정됩니다.)", tts=False)
 
@@ -1126,7 +1127,7 @@ while True:
 
 				return await ctx.send(f"명령어 채널이 **[{ctx.author.guild.name}]** 서버 **[{ctx.message.channel.name}]** 채널로 새로 설정되었습니다.\n< 음성채널 접속 후 [{command[5][0]}] 명령을 사용 하세요 >")
 			else:
-				return await ctx.send(f"초기화가 취소되었습니다.\n**[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널에서 사용해주세요!")
+				return await ctx.send(f"명령어 채널 설정이 취소되었습니다.\n**[{curr_guild_info.name}]** 서버 **[{setting_channel_name}]** 채널에서 사용해주세요!")
 
 	################ 보탐봇 메뉴 출력 ################ 	
 	@client.command(name=command[1][0], aliases=command[1][1:])
@@ -2655,7 +2656,7 @@ while True:
 
 					################ 보스 멍 처리 ################ 
 
-					if message.content.startswith(bossData[i][0] +'멍'):
+					if message.content.startswith(bossData[i][0] +'멍') or message.content.startswith(bossData[i][0] +' 멍'):
 						if hello.find('  ') != -1 :
 							bossData[i][6] = hello[hello.find('  ')+2:]
 							hello = hello[:hello.find('  ')]
@@ -2726,7 +2727,7 @@ while True:
 						
 				################ 예상 보스 타임 입력 ################ 
 
-					if message.content.startswith(bossData[i][0] +'예상'):
+					if message.content.startswith(bossData[i][0] +'예상')  or message.content.startswith(bossData[i][0] +' 예상'):
 						if hello.find('  ') != -1 :
 							bossData[i][6] = hello[hello.find('  ')+2:]
 							hello = hello[:hello.find('  ')]
@@ -2734,7 +2735,7 @@ while True:
 							bossData[i][6] = ''
 							
 						tmp_msg = bossData[i][0] +'예상'
-						if len(hello) > len(tmp_msg) + 3 :
+						if len(hello) > len(tmp_msg) + 4 :
 							if hello.find(':') != -1 :
 								chkpos = hello.find(':')
 								hours1 = hello[chkpos-2:chkpos]
@@ -2771,7 +2772,7 @@ while True:
 							
 					################ 보스타임 삭제 ################
 						
-					if message.content == bossData[i][0] +'삭제':
+					if message.content == bossData[i][0] +'삭제' or message.content == bossData[i][0] +' 삭제':
 						bossTime[i] = datetime.datetime.now()+datetime.timedelta(days=365, hours = int(basicSetting[0]))
 						tmp_bossTime[i] =  datetime.datetime.now()+datetime.timedelta(days=365, hours = int(basicSetting[0]))
 						bossTimeString[i] = '99:99:99'
