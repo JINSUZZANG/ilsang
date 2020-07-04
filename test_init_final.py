@@ -177,7 +177,7 @@ def init():
 	file_data5 = file_data5.decode('utf-8')
 	kill_inputData = file_data5.split('\n')
 
-	item_inidata = repo.get_contents("kill_list.ini")
+	item_inidata = repo.get_contents("item_list.ini")
 	file_data6 = base64.b64decode(item_inidata.content)
 	file_data6 = file_data6.decode('utf-8')
 	item_inputData = file_data6.split('\n')
