@@ -2340,13 +2340,13 @@ while True:
 			return
 
 	################ 킬 차감 ################ 
-	@client.command(name=command[32][0], aliases=command[32][1:]) 
+	@client.command(name=command[33][0], aliases=command[33][1:]) 
 	async def killSubtract_(ctx, *, args : str = None):
 		if ctx.message.channel.id == basicSetting[7] or ctx.message.channel.id == basicSetting[18]:
 			global kill_Data
 
 			if not args:
-				return await ctx.send(f'{command[32][0]} [아이디] 혹은 {command[32][0]} [아이디] [횟수] 양식에 맞춰 입력해주세요!', tts = False)
+				return await ctx.send(f'{command[33][0]} [아이디] 혹은 {command[33][0]} [아이디] [횟수] 양식에 맞춰 입력해주세요!', tts = False)
 
 			input_data = args.split()
 			
@@ -2360,7 +2360,7 @@ while True:
 				except ValueError:
 					return await ctx.send(f'[횟수]는 숫자로 입력바랍니다')
 			else:
-				return await ctx.send(f'{command[32][0]} [아이디] 혹은 {command[32][0]} [아이디] [횟수] 양식에 맞춰 입력해주세요!', tts = False)
+				return await ctx.send(f'{command[33][0]} [아이디] 혹은 {command[33][0]} [아이디] [횟수] 양식에 맞춰 입력해주세요!', tts = False)
 
 			if kill_name in kill_Data:
 				if kill_Data[kill_name] < int(count):
