@@ -251,14 +251,14 @@ def init():
 	for i in range(len(kill_inputData)):
 		tmp_kill_Data.append(kill_inputData[i].rstrip('\r'))
 		fk.append(tmp_kill_Data[i][:tmp_kill_Data[i].find(' ')])
-		fk.append(tmp_kill_Data[i][tmp_kill_Data[i].find(' ')+1:)
+		fk.append(tmp_kill_Data[i][tmp_kill_Data[i].find(' ')+1:])
 		kill_Data.append(fk)     #kill_Data[0] : 척살명단   kill_Data[1] : 죽은횟수
 		fk = []
 
 	for i in range(len(item_inputData)):
 		tmp_item_Data.append(item_inputData[i].rstrip('\r'))
 		fi.append(tmp_item_Data[i][:tmp_item_Data[i].find(' ')])
-		fi.append(tmp_item_Data[i][tmp_item_Data[i].find(' ')+1:)
+		fi.append(tmp_item_Data[i][tmp_item_Data[i].find(' ')+1:])
 		item_Data.append(fi)     #item_Data[0] : 이름   item_Data[1] : 아이템 개수
 		fi = []
 
