@@ -252,14 +252,14 @@ def init():
 		tmp_kill_Data.append(kill_inputData[i].rstrip('\r'))
 		fk.append(tmp_kill_Data[i][:tmp_kill_Data[i].find(' ')])
 		fk.append(tmp_kill_Data[i][tmp_kill_Data[i].find(' ')+1:])
-		kill_Data.append(fk)     #kill_Data[0] : 척살명단   kill_Data[1] : 죽은횟수
+		kill_Data[fk[0]] = int(fk[1])
 		fk = []
 
 	for i in range(len(item_inputData)):
 		tmp_item_Data.append(item_inputData[i].rstrip('\r'))
 		fi.append(tmp_item_Data[i][:tmp_item_Data[i].find(' ')])
 		fi.append(tmp_item_Data[i][tmp_item_Data[i].find(' ')+1:])
-		item_Data.append(fi)     #item_Data[0] : 이름   item_Data[1] : 아이템 개수
+		item_Data[fi[0]] = int(fi[1])
 		fi = []
 
 
@@ -862,7 +862,7 @@ async def LadderFunc(number, ladderlist, channelVal):
 async def init_data_list(filename, first_line : str = "-----------"):
 	try :
 		contents = repo.get_contents(filename)
-		repo.update_file(contents.path, "updated" + str(filename), first_line, contents.sha)
+		repo.update_file(contents.path, "deleted list " + str(filename), first_line, contents.sha)
 		print ('< 데이터 초기화 >')
 	except GithubException as e :
 		print ('save error!!')
@@ -880,7 +880,7 @@ async def data_list_Save(filename, first_line : str = "-----------",  save_data 
 
 	try :
 		contents = repo.get_contents(filename)
-		repo.update_file(contents.path, "updated" + str(filename), output_list, contents.sha)
+		repo.update_file(contents.path, "updated " + str(filename), output_list, contents.sha)
 	except GithubException as e :
 		print ('save error!!')
 		print(e.args[1]['message']) # output: This repository is empty.
